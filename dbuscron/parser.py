@@ -57,6 +57,9 @@ class CrontabParser(object):
 
                 rule = [(None,), (None,), (None,), (None,), (None,), (None,), (None,), (None,)]
 
+                if parts[1] = '*':
+                    parts[1] = 'signal,method_call,method_return,error'
+
                 for p in range(1, 8):
                     if parts[p] != '*':
                         rule[p] = parts[p].split(',')
