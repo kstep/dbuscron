@@ -31,15 +31,12 @@ class DbusBus(object):
             self.__system_bus.add_message_filter(handler)
         if self.__session_bus:
             self.__session_bus.add_message_filter(handler)
-
     def listen(self):
-        from dbus.mainloop.glib import DBusGMainLoop
         from gobject import MainLoop
-        DBusGMainLoop(set_as_default=True)
         loop = MainLoop()
         loop.run()
 
-class DbusRuleMatcher(object):
+class DbusRule(object):
     def __init__(self, bus_=None, type_=None, sender_=None, interface_=None, path_=None, member_=None, destination_=None, args_=[]):
         self._bus         = bus_
         self._type        = type_

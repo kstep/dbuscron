@@ -23,14 +23,14 @@ if __name__ == '__main__':
             logfile='/var/log/dbuscron.log'
             )
 
-    from dbuscron import DbusBus, DbusRuleMatcher, Command, Commands, CrontabParser
+    from dbuscron import DbusBus, DbusRule, Command, Commands, CrontabParser
 
     bus = DbusBus()
     commands = Commands()
     crontab = CrontabParser('/etc/dbuscrontab')
 
     for rule, cmd in crontab:
-        matcher = DbusRuleMatcher(**rule)
+        matcher = DbusRule(**rule)
         command = Command(cmd)
         matcher.register()
         commands.add(matcher, command)
