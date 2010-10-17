@@ -55,27 +55,26 @@ class CrontabParser(object):
                         self.__environ[parts[0]] = parts[1]
                     continue
 
-                rule = [(None,), (None,), (None,), (None,), (None,), (None,), (None,), (None,)]
+                rule = [('s','S'), ('signal','method_call','method_return','error'), (None,), (None,), (None,), (None,), (None,), (None,)]
 
-                if parts[1] = '*':
-                    parts[1] = 'signal,method_call,method_return,error'
-
-                for p in range(1, 8):
+                for p in range(0, 8):
                     if parts[p] != '*':
                         rule[p] = parts[p].split(',')
 
                 command = parts[8]
-
-                if parts[0] == '*' or parts[0] == 'S,s' or parts[0] == 's,S':
-                    rule[0] = (self.__bus.system, self.__bus.session)
-                elif parts[0] == 's':
-                    rule[0] = (self.__bus.session,)
-                elif parts[0] == 'S':
-                    rule[0] = (self.__bus.system,)
-                    
+ 
                 for r in product(*rule):
+                    r = list(r)
+                    if r[0] == 'S':
+                        r[0] = self.__bus.system
+                    elif r[0] == 's':
+                        r[0] = self.__bus.session
+                    else:
+                        continue
+	
                     if r[7]:
                         r[7] = r[7].split(';')
+
                     ruled = dict()
                     for i, f in enumerate(self.__fields):
                         ruled[f] = r[i]
