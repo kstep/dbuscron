@@ -14,6 +14,10 @@ class DbusBus(object):
             cls.__bus = super(DbusBus, cls).__new__(cls)
         return cls.__bus
 
+    def __init__(self):
+        from dbus.mainloop.glib import DBusGMainLoop
+        DBusGMainLoop(set_as_default=True)
+
     @property
     def system(self):
         if not self.__system_bus:
