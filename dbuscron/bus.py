@@ -2,7 +2,10 @@
 import dbus
 
 def get_dbus_message_type(message):
-    return message.__class__.__name__.lower()[0:-7]
+    result = message.__class__.__name__[0:-7]
+    for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+        result = result.replace(c, '_'+c.lower())
+    return result.strip('_')
 
 class DbusBus(object):
     __bus = None
