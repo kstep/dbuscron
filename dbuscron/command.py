@@ -1,5 +1,6 @@
 
 import os
+from dbuscron.bus import get_dbus_message_type
 
 class Command(object):
     def __init__(self, cmd):
@@ -12,7 +13,6 @@ class Command(object):
             self.__file = self.__args[0]
 
     def __call__(self, bus, message, environ):
-
         args_list = message.get_args_list()
         env = dict()
         env.update(environ)
