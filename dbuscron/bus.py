@@ -97,12 +97,13 @@ class DbusRule(object):
         if self._destination not in (None, message.get_destination()):
             return False
 
-        args_ = message.get_args_list()
-        for i, arg in enumerate(args_):
-            if i >= len(self._args):
-                break
-            if self._args[i] not in (None, arg):
-                return False
+        if self._args is not None:
+            args_ = message.get_args_list()
+            for i, arg in enumerate(args_):
+                if i >= len(self._args):
+                    break
+                if self._args[i] not in (None, arg):
+                    return False
 
         return True
 
