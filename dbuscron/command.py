@@ -1,6 +1,6 @@
 
 import os
-from dbuscron.bus import get_dbus_message_type
+from dbuscron.bus import get_dbus_message_type, dbus_to_str
 
 class Command(object):
     def __init__(self, cmd):
@@ -16,8 +16,8 @@ class Command(object):
         args_list = message.get_args_list()
         env = dict()
         env.update(environ)
-        env.update(dict(
-                (('DBUS_ARG%d' % i, str(args_list[i])) for i in range(0, len(args_list))),
+        dbus_env = dict(
+                (('DBUS_ARG%d' % i, dbus_to_str(a)) for i, a in enumerate(args_list)),
                 DBUS_ARGN   = str(len(args_list)),
                 DBUS_SENDER = str(message.get_sender()),
                 DBUS_DEST   = str(message.get_destination()),
@@ -26,7 +26,8 @@ class Command(object):
                 DBUS_MEMBER = str(message.get_member()),
                 DBUS_BUS    = bus.__class__.__name__.lower()[0:-3],
                 DBUS_TYPE   = get_dbus_message_type(message)
-                ))
+                )
+        env.update(dbus_env)
         result = os.spawnvpe(os.P_WAIT, self.__file, self.__args, env)
         return result
 

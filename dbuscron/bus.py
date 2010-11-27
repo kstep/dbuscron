@@ -1,6 +1,18 @@
 
 import dbus
 
+def dbus_to_str(value):
+    if isinstance(value, dbus.Byte):
+        return str(int(value))
+    elif isinstance(value, dbus.ByteArray):
+        return ','.join(str(ord(v)) for v in value)
+    elif isinstance(value, dbus.Array):
+        return ','.join(str(v) for v in value)
+    elif isinstance(value, dbus.Dictionary):
+        return ','.join('%s:%s' % (k, v) for k, v in value.iteritems())
+    else:
+        return str(value)
+
 def get_dbus_message_type(message):
     result = message.__class__.__name__[0:-7]
     for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
@@ -102,7 +114,7 @@ class DbusRule(object):
             for i, arg in enumerate(args_):
                 if i >= len(self._args):
                     break
-                if self._args[i] not in (None, arg):
+                if self._args[i] not in (None, str(arg)):
                     return False
 
         return True
