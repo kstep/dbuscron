@@ -2,18 +2,15 @@ from __future__ import with_statement
 import re
 from dbuscron.bus import DbusBus
 
-try:
-    from itertools import product
-except ImportError:
-    def product(*args):
-        if args:
-            head, tail = args[0], args[1:]
-            for h in head:
-                for t in product(*tail):
-                    yield (h,) + t
-    
-        else:
-            yield ()
+def product(*args):
+    if args:
+        head, tail = args[0], args[1:]
+        for h in head:
+            for t in product(*tail):
+                yield (h,) + t
+
+    else:
+        yield ()
 
 class CrontabParser(object):
     __fields_sep = re.compile(r'\s+')
