@@ -78,8 +78,13 @@ class CrontabParser(object):
                     yield ruled, command
 
 class OptionsParser(dict):
-    def __init__(self, args, opts):
+    def __init__(self, opts, args=None):
         super(OptionsParser, self).__init__()
+
+        if args is None:
+            import sys
+            args = sys.argv[1:]
+
         from getopt import getopt
         go, _ = getopt(args, opts)
 
