@@ -15,7 +15,18 @@ import sys
 
 if __name__ == '__main__':
 
-    daemon = (len(sys.argv) < 2) or (sys.argv[1] != '-f')
+    from dbuscron import Logger, OptionsParser
+
+    options = OptionsParser('fvc:l:')
+    daemon = not options.f
+
+    logout = sys.stderr
+    if options.l:
+        logout = open(options.l, 'wb')
+
+    log = Logger(__name__, out=logout)
+    log.level = options.v + Logger.ERROR
+
     if daemon:
         from dbuscron.daemonize import daemonize
         daemonize(
@@ -27,12 +38,13 @@ if __name__ == '__main__':
 
     bus = DbusBus()
     commands = Commands()
-    crontab = CrontabParser('/etc/dbuscrontab')
+    crontab = CrontabParser(options.c or '/etc/dbuscrontab')
 
     for rule, cmd in crontab:
         matcher = DbusRule(**rule)
         command = Command(cmd)
         matcher.register()
+        log.info('%s %s' % (matcher, command))
         commands.add(matcher, command)
 
     commands.environ = crontab.environ
