@@ -77,3 +77,34 @@ class CrontabParser(object):
                         ruled[f] = r[i]
                     yield ruled, command
 
+class OptionsParser(dict):
+    def __init__(self, args, opts):
+        super(OptionsParser, self).__init__()
+        from getopt import getopt
+        go, _ = getopt(args, opts)
+
+        for o, v in go:
+            k = o.strip('-')
+            withval = k+':' in opts
+
+            if self.has_key(k):
+                if withval:
+                    if isinstance(self[k], list):
+                        self[k].append(v)
+                    else:
+                        self[k] = [ self[k], v ]
+
+                else:
+                    self[k] += 1
+
+            else:
+                self[k] = v if withval else 1
+
+    def __getitem__(self, k):
+        if not self.has_key(k):
+            return False
+        return super(OptionsParser, self).__getitem__(k)
+
+    def __getattr__(self, k):
+        return self[k]
+
