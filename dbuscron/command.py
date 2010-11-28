@@ -1,6 +1,8 @@
 
 import os
 from dbuscron.bus import get_dbus_message_type, dbus_to_str
+from dbuscron.logger import Logger
+log = Logger(__name__)
 
 class Command(object):
     def __init__(self, cmd):
@@ -29,6 +31,7 @@ class Command(object):
                 )
         env.update(dbus_env)
         result = os.spawnvpe(os.P_WAIT, self.__file, self.__args, env)
+        log.info('run %s %s %s %s' % (self.__file, self.__args, dbus_env, result))
         return result
 
     @property
@@ -58,6 +61,7 @@ class Commands(object):
     def handler(self, bus, message):
         for rule, command in self.__commands.iteritems():
             if rule.match(bus, message):
+                log.info('matched %s %s' % (rule, command))
                 command(bus, message, self.__environ)
                 return
 

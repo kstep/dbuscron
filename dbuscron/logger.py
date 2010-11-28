@@ -8,11 +8,18 @@ class Logger(object):
     __out = None
     __name = None
 
+    __instance = None
+
     DEBUG = 4
     INFO = 3
     WARNING = 2
     ERROR = 1
     PANIC = 0
+
+    def __new__(cls, name, out=sys.stderr):
+        if cls.__instance is None:
+            cls.__instance = super(Logger, cls).__new__(cls)
+        return cls.__instance
 
     def __init__(self, name, out=sys.stderr):
         self.__out = out
