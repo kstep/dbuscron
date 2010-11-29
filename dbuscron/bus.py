@@ -1,7 +1,11 @@
 
 import dbus
 
+from dbuscron.logger import Logger
+log = Logger(__name__)
+
 def dbus_to_str(value):
+    log('converting', value, 'of type', type(value))
     if isinstance(value, dbus.Byte):
         return str(int(value))
     elif isinstance(value, dbus.ByteArray):
