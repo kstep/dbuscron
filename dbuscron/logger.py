@@ -31,23 +31,26 @@ class Logger(object):
         self.__level = int(value)
     level = property(_get_level, _set_level)
 
-    def log(self, level, message):
+    def log(self, level, *message):
         if level <= self.__level:
+            msg = ' '.join(str(m) for m in message)
             ts = datetime.now().strftime('%Y-%m-%d %H:%M')
-            self.__out.write('[%s] %s\n' % (ts, message))
+            self.__out.write('[%s] %s\n' % (ts, msg))
 
-    def debug(self, message):
-        self.log(self.DEBUG, message)
+    def debug(self, *message):
+        self.log(self.DEBUG, *message)
     
-    def info(self, message):
-        self.log(self.INFO, message)
+    def info(self, *message):
+        self.log(self.INFO, *message)
     
-    def warn(self, message):
-        self.log(self.WARNING, message)
+    def warn(self, *message):
+        self.log(self.WARNING, *message)
 
-    def error(self, message):
-        self.log(self.ERROR, message)
+    def error(self, *message):
+        self.log(self.ERROR, *message)
 
-    def panic(self, message):
-        self.log(self.PANIC, message)
+    def panic(self, *message):
+        self.log(self.PANIC, *message)
+
+    __call__ = info
 
