@@ -31,7 +31,8 @@ class Command(object):
                 )
         env.update(dbus_env)
         result = os.spawnvpe(os.P_WAIT, self.__file, self.__args, env)
-        log.info('run %s %s %s %s' % (self.__file, self.__args, dbus_env, result))
+        if result != 0:
+            log.warn('run', self.__file, self.__args, dbus_env, result)
         return result
 
     @property
