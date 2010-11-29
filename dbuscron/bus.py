@@ -11,9 +11,9 @@ def dbus_to_str(value):
     elif isinstance(value, dbus.ByteArray):
         return ','.join(str(ord(v)) for v in value)
     elif isinstance(value, dbus.Array):
-        return ','.join(str(v) for v in value)
+        return ','.join(dbus_to_str(v) for v in value)
     elif isinstance(value, dbus.Dictionary):
-        return ','.join('%s:%s' % (k, v) for k, v in value.iteritems())
+        return ','.join('%s:%s' % (k, dbus_to_str(v)) for k, v in value.iteritems())
     else:
         return str(value)
 
