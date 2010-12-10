@@ -73,3 +73,6 @@ class Commands(object):
     def add(self, matcher, command):
         self.__commands[matcher] = command
 
+    def clear(self):
+        self.__commands = {}
+
