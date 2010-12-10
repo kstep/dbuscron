@@ -49,6 +49,10 @@ class Commands(object):
     __commands = {}
     __environ = {}
 
+    def __iter__(self):
+        for m, c in self.__commands.iteritems():
+            yield m, c
+
     def _get_environ(self):
         return self.__environ
 
