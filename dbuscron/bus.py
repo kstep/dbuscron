@@ -73,7 +73,15 @@ class DbusRule(object):
     def register(self):
         rule = str(self)
         if rule:
-            self._bus.add_match_string(str(self))
+            self._bus.add_match_string(rule)
+
+    def unregister(self):
+        rule = str(self)
+        if rule:
+            self._bus.remove_match_string(rule)
+
+    #def __del__(self):
+    #    self.unregister()
 
     def __str__(self):
         rule = []
