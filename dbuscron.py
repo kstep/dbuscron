@@ -38,14 +38,29 @@ if __name__ == '__main__':
 
     bus = DbusBus()
     commands = Commands()
+
     crontab = CrontabParser(options.c or '/etc/dbuscrontab')
 
-    for rule, cmd in crontab:
-        matcher = DbusRule(**rule)
-        command = Command(cmd)
-        matcher.register()
-        log.info('%s %s' % (matcher, command))
-        commands.add(matcher, command)
+    def load_config(parser):
+        for rule, cmd in parser:
+            matcher = DbusRule(**rule)
+            command = Command(cmd)
+            matcher.register()
+            log.info('%s %s' % (matcher, command))
+            commands.add(matcher, command)
+
+    load_config(crontab)
+
+    def reload_config_on_signal(sig_no, stack):
+        log.info('Signal #%d received: reloading config...' % (sig_no))
+        for matcher, command in commands:
+            matcher.unregister()
+        commands.clear()
+        load_config(crontab)
+        log.info('Done config reloading.')
+
+    import signal
+    signal.signal(signal.SIGHUP, reload_config_on_signal)
 
     commands.environ = crontab.environ
     bus.attach_handler(commands.handler)
