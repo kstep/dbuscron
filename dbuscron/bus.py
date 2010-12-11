@@ -80,8 +80,8 @@ class DbusRule(object):
         if rule:
             self._bus.remove_match_string(rule)
 
-    #def __del__(self):
-    #    self.unregister()
+    def __del__(self):
+       self.unregister()
 
     def __str__(self):
         rule = []
