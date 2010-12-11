@@ -53,8 +53,6 @@ if __name__ == '__main__':
 
     def reload_config_on_signal(sig_no, stack):
         log.info('Signal #%d received: reloading config...' % (sig_no))
-        for matcher, command in commands:
-            matcher.unregister()
         commands.clear()
         load_config(crontab)
         log.info('Done config reloading.')
