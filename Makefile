@@ -25,5 +25,7 @@ uninstall:
 	rm -f $(DESTDIR)/etc/event.d/dbuscron
 
 clean:
-	find . -name "*.py[co]" | xargs rm -f 
+	find ./dbuscron -name "*.py[co]" | xargs rm -f 
+
+.PHONY: all install uninstall clean
 
