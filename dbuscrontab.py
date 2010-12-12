@@ -80,7 +80,9 @@ if __name__ == '__main__':
             check_syntax(conffile)
         except CrontabParserError, e:
             print e.message
+            print "File %s has syntax errors." % (conffile)
             sys.exit(3)
+        print "File %s has no syntax errors." % (conffile)
 
     else:
         print """
