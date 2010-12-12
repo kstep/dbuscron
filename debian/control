@@ -10,7 +10,7 @@ Homepage: https://github.com/kstep/dbuscron
 
 Package: dbuscron
 Architecture: all
-Depends: ${misc:Depends}, python (>=2.5)
+Depends: ${misc:Depends}, python (>=2.5), python-dbus
 Description: dbuscron is cron-like DBUS events scheduler
  It's main target is Maemo 5. I wrote it for my N900 actually,
  so I can schedule tasks for different DBUS events. This package
