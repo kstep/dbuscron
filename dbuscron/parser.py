@@ -12,6 +12,9 @@ def product(*args):
     else:
         yield ()
 
+class CrontabParserError(SyntaxError):
+    pass
+
 class CrontabParser(object):
     __fields_sep = re.compile(r'\s+')
     __envvar_sep = re.compile(r'\s*=\s*')
@@ -38,8 +41,10 @@ class CrontabParser(object):
 
     def __iter__(self):
         # bus type sender interface path member destination args command
+        lineno = 0
         with open(self.__filename) as f:
             for line in f:
+                lineno += 1
                 line = line.strip()
 
                 if not line or line.startswith('#'):
@@ -50,7 +55,9 @@ class CrontabParser(object):
                     parts = self.__envvar_sep(line, 1)
                     if len(parts) == 2:
                         self.__environ[parts[0]] = parts[1]
-                    continue
+                        continue
+
+                    raise SyntaxError('Unexpected number of records at line #%d.' % (lineno))
 
                 rule = [('s','S'), ('signal','method_call','method_return','error'), (None,), (None,), (None,), (None,), (None,), (None,)]
 
