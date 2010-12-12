@@ -1,0 +1,50 @@
+# This is a system-wide dbuscron config file.
+# Lines starting with `#' are ignored.
+# Format of this file (table with whitespace-separated records):
+#
+# bus type sender interface path member destination arguments command
+#
+# Any field can have asterisk only (*) to match any value, each field can have
+# multiple values separated with comma (,), matching any of these values will
+# match. Only last (command) field can contain spaces. Bus field can be either
+# `S' for system bus or `s' for session bus, type field can have one of signal,
+# method_return, method_call or error values. Arguments consist of
+# semicolon-separated values to match arguments of DBUS events.
+#
+# Examples:
+#
+# Run command for every DBUS event:
+# * * * * * * * * command
+#
+# Run command on system bus event named Event with type either method_call or
+# method_return:
+# S method_call,method_return * * * * Event * command
+#
+# The same as above, by check if second argument equals either `foo' or `bar',
+# or first arguments is baz:
+# S method_call,method_return * * * * Event ;foo,;bar,baz command
+#
+# More practical examples:
+#
+# Run command on incoming call:
+# S signal * com.nokia.csd.Call /com/nokia/csd/call Coming * * run-standalone.sh incoming-call-hook.sh
+#
+# Run command on GPRS connected:
+# S signal * com.nokia.csd.GPRS.Context /com/nokia/csd/gprs/0 Connected * * run-standalone.sh gprs-connected-hook.sh
+#
+# This file can also contain any number of environmental variables settings, e.g.:
+# PATH = /usr/bin:/usr/sbin
+#
+# When command is running there're a number of environmental variables set so
+# the script can check DBUS event data. The variables are:
+#   DBUS_ARG# (where # is the number from 0 to DBUS_ARGN) - arguments of event,
+#   DBUS_ARGN - number of event arguments,
+#   DBUS_SENDER - event sender name,
+#   DBUS_DEST - event destination name,
+#   DBUS_IFACE - event interface,
+#   DBUS_PATH - event object path,
+#   DBUS_MEMBER - called event member,
+#   DBUS_BUS - bus event came from (`session' or `system'),
+#   DBUS_TYPE - event type as described above.
+#
+
