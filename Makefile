@@ -19,3 +19,7 @@ uninstall:
 	rm -rf $(PYMODULES)/dbuscron
 	rm -f $(PREFIX)/dbuscron $(PREFIX)/dbuscrontab
 	rm -f /etc/event.d/dbuscron
+
+clean:
+	find . -name "*.py[co]" | xargs rm -f 
+
