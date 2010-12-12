@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
 import os, sys, shutil, signal, tempfile, pipes
-crontab = '/etc/dbuscrontab'
+conffile = '/etc/dbuscrontab'
 pidfile = '/var/run/dbuscron.pid'
+
+from dbuscron.parser import CrontabParser
 
 def create_temp_file(orig_file):
     try:
@@ -26,26 +28,59 @@ def get_dbuscron_pid():
     except:
         raise SystemError('Unable to get PID of dbuscron job.')
 
+def check_syntax(filename):
+    parser = CrontabParser(filename)
+    for rule, command in parser:
+        pass
+
 if __name__ == '__main__':
 
-# 1. create temporary config file copy
-    temp_file = create_temp_file(crontab)
-    mod_time = os.path.getmtime(temp_file)
+    try:
+        action = sys.argv[1]
+    except IndexError:
+        action = None
 
-# 2. run system editor on this file
-    run_system_editor(temp_file)
+    if action == '-e':
+        # 1. create temporary config file copy
+        temp_file = create_temp_file(conffile)
+        mod_time = os.path.getmtime(temp_file)
 
-# 3. check if this file is changed
-    if os.path.getmtime(temp_file) <= mod_time:
-        print 'File was not changed.'
-        sys.exit(2)
+        # 2. run system editor on this file
+        run_system_editor(temp_file)
 
-# TODO: 4. check this file's syntax
+        # 3. check if this file is changed
+        if os.path.getmtime(temp_file) <= mod_time:
+            print 'File was not changed.'
+            sys.exit(2)
 
-# 5. replace system wide config file with new one
-    shutil.move(temp_file, crontab)
+        # TODO: 4. check this file's syntax
+        check_syntax(temp_file)
 
-# 6. send sighup to dbuscron daemon
-    pid = get_dbuscron_pid()
-    os.kill(pid, signal.SIGHUP)
+        # 5. replace system wide config file with new one
+        shutil.move(temp_file, conffile)
+
+        # 6. send sighup to dbuscron daemon
+        pid = get_dbuscron_pid()
+        os.kill(pid, signal.SIGHUP)
+        print "Everything's OK, SIGHUP to dbuscron is sent."
+
+    elif action == '-l':
+        f = open(conffile, 'r')
+        for l in f:
+            print l.strip()
+        f.close()
+
+    elif action == '-k':
+        check_syntax(conffile)
+
+    else:
+        print """
+Usage:
+    %(myname)s { -e | -l }
+
+    -e      edit %(conffile)s file
+    -l      list contents of %(conffile)s file
+    -k      check %(conffile)s's syntax
+
+""" % dict(myname=os.path.basename(sys.argv[0]), conffile=conffile)
 
