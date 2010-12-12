@@ -1,0 +1,38 @@
+Source: dbuscron
+Section: devel
+Priority: extra
+Maintainer: Konstantin Stepanov <kstep@p-nut.info>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Homepage: https://github.com/kstep/dbuscron
+#Vcs-Git: git://git.debian.org/collab-maint/dbuscron.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/dbuscron.git;a=summary
+
+Package: dbuscron
+Architecture: all
+Depends: ${misc:Depends}, python (>=2.5)
+Description: dbuscron is cron-like DBUS events scheduler
+ It's main target is Maemo 5. I wrote it for my N900 actually,
+ so I can schedule tasks for different DBUS events. This package
+ is prepared for Maemo 5 only, but the application itself can
+ be used on any Linux system.
+ .
+ It's configuration file is /etc/dbuscrontab.
+ Use `dbuscrontab -e' command to edit it (run dbuscrontab without
+ parameters to see help on command arguments).
+ .
+ The format of dbuscrontab is really simple and very similar to
+ crontab's one: it is a white-space separated table file, each
+ not empty and not comment (the one with `#' at first column) line
+ consists of 9 space separated fields: bus (`S' for system and `s'
+ for session), event type (signal, method_call, method_return or error),
+ event sender name, interface, object path, member, destination,
+ event arguments (actually a semicolon-separated list of arguments
+ to match) and shell command to run.
+ .
+ Every field can contain `*' to match any value, or multiple possible
+ values separated with comma.
+ .
+ When run, daemon listens for these events and runs shell command
+ for caught event. That's it!
+
