@@ -4,7 +4,7 @@ import os, sys, shutil, signal, tempfile, pipes
 conffile = '/etc/dbuscrontab'
 pidfile = '/var/run/dbuscron.pid'
 
-from dbuscron.parser import CrontabParser
+from dbuscron.parser import CrontabParser, CrontabParserError
 
 def create_temp_file(orig_file):
     try:
@@ -54,7 +54,12 @@ if __name__ == '__main__':
             sys.exit(2)
 
         # TODO: 4. check this file's syntax
-        check_syntax(temp_file)
+        try:
+            check_syntax(temp_file)
+        except CrontabParserError, e:
+            print e.message
+            print 'File has syntax errors, aborting.'
+            sys.exit(3)
 
         # 5. replace system wide config file with new one
         shutil.move(temp_file, conffile)
@@ -71,7 +76,11 @@ if __name__ == '__main__':
         f.close()
 
     elif action == '-k':
-        check_syntax(conffile)
+        try:
+            check_syntax(conffile)
+        except CrontabParserError, e:
+            print e.message
+            sys.exit(3)
 
     else:
         print """
