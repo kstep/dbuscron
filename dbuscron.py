@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     from dbuscron import Logger, OptionsParser
 
-    options = OptionsParser('fvc:l:')
+    options = OptionsParser('fqvc:l:')
     daemon = not options.f
 
     logout = sys.stderr
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         logout = open(options.l, 'wb')
 
     log = Logger(__name__, out=logout)
-    log.level = options.v + Logger.ERROR
+    log.level = options.v - options.q + Logger.WARNING
 
     if daemon:
         from dbuscron.daemonize import daemonize
