@@ -1,0 +1,4 @@
+#!/bin/sh
+/sbin/initctl stop dbuscron
+exit 0
+
