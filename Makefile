@@ -15,7 +15,7 @@ install:
 	python$(PYVERSION) -O -c 'import dbuscron'
 	install -o root -g root -m 0644 ./dbuscron/*.$(PYSUFFIX) $(PYMODULES)/dbuscron
 	install -o root -g root -m 0644 ./event.d/dbuscron $(DESTDIR)/etc/event.d/dbuscron
-	test ! -f $(DESTDIR)/etc/dbuscrontab && \
+	-test ! -f $(DESTDIR)/etc/dbuscrontab && \
 		install -o root -g root -m 0644 ./doc/dbuscrontab $(DESTDIR)/etc/dbuscrontab
 	@echo "Installation complete. Run \`dbuscrontab -e' to edit config file,"
 	@echo "then run \`initctl start dbuscron' to start dbuscron daemon."
