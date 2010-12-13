@@ -17,17 +17,21 @@ if __name__ == '__main__':
 
     from dbuscron import Logger, OptionsParser
 
-    options = OptionsParser('fqvc:l:')
-    daemon = not options.f
+    options = OptionsParser(
+            daemon=dict(names=('-f', '--nodaemon'), action='store_false', default=True),
+            quiet=dict(names=('--quiet', '-q'), action='count', default=0),
+            verbose=dict(names=('--verbose', '-v'), action='count', default=0),
+            config=dict(names=('--conf', '--config', '-c'), default='/etc/dbuscrontab'),
+            logfile=dict(names=('--log', '--logfile', '-l')))
 
     logout = sys.stderr
-    if options.l:
-        logout = open(options.l, 'wb')
+    if options.logfile:
+        logout = open(options.logfile, 'wb')
 
     log = Logger(__name__, out=logout)
-    log.level = options.v - options.q + Logger.WARNING
+    log.level = options.verbose - options.quiet + Logger.WARNING
 
-    if daemon:
+    if options.daemon:
         from dbuscron.daemonize import daemonize
         daemonize(
             pidfile='/var/run/dbuscron.pid',
@@ -39,7 +43,7 @@ if __name__ == '__main__':
     bus = DbusBus()
     commands = Commands()
 
-    crontab = CrontabParser(options.c or '/etc/dbuscrontab')
+    crontab = CrontabParser(options.config)
 
     def load_config(parser):
         for rule, cmd in parser:

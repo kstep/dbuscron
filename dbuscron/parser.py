@@ -1,3 +1,4 @@
+# encoding: utf-8
 from __future__ import with_statement
 import re
 from dbuscron.bus import DbusBus
@@ -111,39 +112,14 @@ class CrontabParser(object):
 
                     yield ruled, command
 
-class OptionsParser(dict):
-    def __init__(self, opts, args=None):
-        super(OptionsParser, self).__init__()
+def OptionsParser(args=None, help=u'', **opts):
 
-        if args is None:
-            import sys
-            args = sys.argv[1:]
+    from optparse import OptionParser
+    parser = OptionParser(usage=help)
+    for opt, desc in opts.iteritems():
+        names = desc.pop('names')
+        desc['dest'] = opt
+        parser.add_option(*names, **desc)
 
-        from getopt import getopt
-        go, _ = getopt(args, opts)
-
-        for o, v in go:
-            k = o.strip('-')
-            withval = k+':' in opts
-
-            if self.has_key(k):
-                if withval:
-                    if isinstance(self[k], list):
-                        self[k].append(v)
-                    else:
-                        self[k] = [ self[k], v ]
-
-                else:
-                    self[k] += 1
-
-            else:
-                self[k] = v if withval else 1
-
-    def __getitem__(self, k):
-        if not self.has_key(k):
-            return False
-        return super(OptionsParser, self).__getitem__(k)
-
-    def __getattr__(self, k):
-        return self[k]
+    return parser.parse_args(args)[0]
 
