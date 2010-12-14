@@ -1,3 +1,4 @@
+# encoding: utf-8
 
 import os
 from dbuscron.bus import get_dbus_message_type, dbus_to_str
@@ -18,21 +19,26 @@ class Command(object):
         args_list = message.get_args_list()
         env = dict()
         env.update(environ)
-        dbus_env = dict(
-                (('DBUS_ARG%d' % i, dbus_to_str(a)) for i, a in enumerate(args_list)),
-                DBUS_ARGN   = str(len(args_list)),
-                DBUS_SENDER = str(message.get_sender()),
-                DBUS_DEST   = str(message.get_destination()),
-                DBUS_IFACE  = str(message.get_interface()),
-                DBUS_PATH   = str(message.get_path()),
-                DBUS_MEMBER = str(message.get_member()),
-                DBUS_BUS    = bus.__class__.__name__.lower()[0:-3],
-                DBUS_TYPE   = get_dbus_message_type(message)
-                )
-        env.update(dbus_env)
+        try:
+            dbus_env = dict(
+                    (('DBUS_ARG%d' % i, dbus_to_str(a)) for i, a in enumerate(args_list)),
+                    DBUS_ARGN   = str(len(args_list)),
+                    DBUS_SENDER = str(message.get_sender()),
+                    DBUS_DEST   = str(message.get_destination()),
+                    DBUS_IFACE  = str(message.get_interface()),
+                    DBUS_PATH   = str(message.get_path()),
+                    DBUS_MEMBER = str(message.get_member()),
+                    DBUS_BUS    = bus.__class__.__name__.lower()[0:-3],
+                    DBUS_TYPE   = get_dbus_message_type(message)
+                    )
+            env.update(dbus_env)
+        except Exception, e:
+            log.error('environ exception', e)
+            raise e
+
         result = os.spawnvpe(os.P_WAIT, self.__file, self.__args, env)
         if result != 0:
-            log.warn('run', self.__file, self.__args, dbus_env, result)
+            log.warn('command returned non-zero status', self.__file, self.__args, dbus_env, result)
         return result
 
     @property

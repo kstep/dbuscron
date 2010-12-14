@@ -5,17 +5,24 @@ from dbuscron.logger import Logger
 log = Logger(__name__)
 
 def dbus_to_str(value):
-    log('converting', value, 'of type', type(value))
-    if isinstance(value, dbus.Byte):
-        return str(int(value))
-    elif isinstance(value, dbus.ByteArray):
-        return ','.join(str(ord(v)) for v in value)
-    elif isinstance(value, dbus.Array):
-        return ','.join(dbus_to_str(v) for v in value)
-    elif isinstance(value, dbus.Dictionary):
-        return ','.join('%s:%s' % (k, dbus_to_str(v)) for k, v in value.iteritems())
-    else:
-        return str(value)
+    try:
+        if isinstance(value, dbus.Byte):
+            result = str(int(value))
+        elif isinstance(value, dbus.ByteArray):
+            result = ','.join(str(ord(v)) for v in value)
+        elif isinstance(value, dbus.Array):
+            result = ','.join(dbus_to_str(v) for v in value)
+        elif isinstance(value, dbus.Dictionary):
+            result = ','.join('%s:%s' % (k, dbus_to_str(v)) for k, v in value.iteritems())
+        elif isinstance(value, dbus.String):
+            result = value.encode('utf-8')
+        else:
+            result = str(value)
+        return result
+    except Exception, e:
+        log.error('convert exception', e)
+        raise e
+
 
 def get_dbus_message_type(message):
     result = message.__class__.__name__[0:-7]
