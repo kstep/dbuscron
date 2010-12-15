@@ -72,7 +72,7 @@ class Commands(object):
     def handler(self, bus, message):
         for rule, command in self.__commands.iteritems():
             if rule.match(bus, message):
-                log.info('matched %s %s' % (rule, command))
+                log('rule matched', rule, command)
                 command(bus, message, self.__environ)
                 return
 
