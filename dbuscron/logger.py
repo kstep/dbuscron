@@ -32,10 +32,18 @@ class Logger(object):
     level = property(_get_level, _set_level)
 
     def log(self, level, *message):
-        if level <= self.__level:
-            msg = ' '.join(str(m) for m in message)
-            ts = datetime.now().strftime('%Y-%m-%d %H:%M')
-            self.__out.write('[%s] %s\n' % (ts, msg))
+        if level > self.__level:
+            return
+
+        def ucode(m):
+            try:
+                return str(m)
+            except UnicodeEncodeError:
+                return unicode(m).encode('utf-8')
+
+        msg = ' '.join(map(ucode, message))
+        ts = datetime.now().strftime('%Y-%m-%d %H:%M')
+        self.__out.write('[%s] %s\n' % (ts, msg))
 
     def debug(self, *message):
         self.log(self.DEBUG, *message)
