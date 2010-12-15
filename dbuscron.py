@@ -50,16 +50,16 @@ if __name__ == '__main__':
             matcher = DbusRule(**rule)
             command = Command(cmd)
             matcher.register()
-            log.info('%s %s' % (matcher, command))
+            log('rule parsed', matcher, command)
             commands.add(matcher, command)
 
     load_config(crontab)
 
     def reload_config_on_signal(sig_no, stack):
-        log.info('Signal #%d received: reloading config...' % (sig_no))
+        log('Signal #%d received: reloading config...' % (sig_no))
         commands.clear()
         load_config(crontab)
-        log.info('Done config reloading.')
+        log('Done config reloading.')
 
     import signal
     signal.signal(signal.SIGHUP, reload_config_on_signal)
