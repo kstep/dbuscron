@@ -1,5 +1,6 @@
+from __future__ import with_statement
 
-import dbus
+import dbus, os
 
 from dbuscron.logger import Logger
 log = Logger(__name__)
@@ -41,8 +42,19 @@ class DbusBus(object):
         return cls.__bus
 
     def __init__(self):
+        self.get_session_bus_address()
         from dbus.mainloop.glib import DBusGMainLoop
         DBusGMainLoop(set_as_default=True)
+
+    def get_session_bus_address(self):
+        try:
+            return os.environ['DBUS_SESSION_BUS_ADDRESS']
+        except KeyError:
+            with open('/tmp/session_bus_address.user', 'rb') as f:
+                session_bus_address = f.readline().strip().split('=', 1).pop().strip("'\"")
+                os.environ['DBUS_SESSION_BUS_ADDRESS'] = session_bus_address
+                log('session bus address aquired', session_bus_address)
+                return session_bus_address
 
     @property
     def system(self):
