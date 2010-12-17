@@ -30,8 +30,12 @@ def get_dbuscron_pid():
 
 def check_syntax(filename):
     parser = CrontabParser(filename)
-    for rule, command in parser:
-        pass
+    try:
+        for rule, command in parser:
+            pass
+    except CrontabParserError, e:
+        print e.message
+        raise SystemError("File %s has syntax errors." % (filename))
 
 if __name__ == '__main__':
 
@@ -40,52 +44,52 @@ if __name__ == '__main__':
     except IndexError:
         action = None
 
-    if action == '-e':
-        # 1. create temporary config file copy
-        temp_file = create_temp_file(conffile)
-        mod_time = os.path.getmtime(temp_file)
+    try:
+        if action == '-e':
 
-        # 2. run system editor on this file
-        run_system_editor(temp_file)
+            # 1. create temporary config file copy
+            temp_file = create_temp_file(conffile)
+            mod_time = os.path.getmtime(temp_file)
 
-        # 3. check if this file is changed
-        if os.path.getmtime(temp_file) <= mod_time:
-            print 'File was not changed.'
-            sys.exit(2)
+            try:
+                # 2. run system editor on this file
+                run_system_editor(temp_file)
 
-        # TODO: 4. check this file's syntax
-        try:
-            check_syntax(temp_file)
-        except CrontabParserError, e:
-            print e.message
-            print 'File has syntax errors, aborting.'
-            sys.exit(3)
+                # 3. check if this file is changed
+                if os.path.getmtime(temp_file) <= mod_time:
+                    print 'File was not changed.'
+                    sys.exit(2)
 
-        # 5. replace system wide config file with new one
-        shutil.move(temp_file, conffile)
+                # 4. check this file's syntax
+                check_syntax(temp_file)
 
-        # 6. send sighup to dbuscron daemon
-        pid = get_dbuscron_pid()
-        os.kill(pid, signal.SIGHUP)
-        print "Everything's OK, SIGHUP to dbuscron is sent."
+                # 5. replace system wide config file with new one
+                shutil.move(temp_file, conffile)
 
-    elif action == '-l':
-        f = open(conffile, 'r')
-        for l in f:
-            print l.strip()
-        f.close()
+            finally:
+                try:
+                    os.unlink(temp_file)
+                except OSError:
+                    pass
 
-    elif action == '-k':
-        try:
+            # 6. send sighup to dbuscron daemon
+            pid = get_dbuscron_pid()
+            os.kill(pid, signal.SIGHUP)
+
+            print "Everything's OK, SIGHUP to dbuscron is sent."
+
+        elif action == '-l':
+            f = open(conffile, 'r')
+            for l in f:
+                print l.strip()
+            f.close()
+
+        elif action == '-k':
             check_syntax(conffile)
-        except CrontabParserError, e:
-            print e.message
-            print "File %s has syntax errors." % (conffile)
-            sys.exit(3)
-        print "File %s has no syntax errors." % (conffile)
+            print "File %s has no syntax errors." % (conffile)
 
-    else:
-        print """
+        else:
+            print """
 Usage:
     %(myname)s { -e | -l }
 
@@ -94,4 +98,8 @@ Usage:
     -k      check %(conffile)s's syntax
 
 """ % dict(myname=os.path.basename(sys.argv[0]), conffile=conffile)
+
+    except SystemError, e:
+        print e.message
+        sys.exit(1)
 
