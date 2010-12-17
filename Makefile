@@ -11,9 +11,10 @@ all:
 install:
 	install -o root -g root -m 0755 ./dbuscron.py $(PREFIX)/dbuscron
 	install -o root -g root -m 0755 ./dbuscrontab.py $(PREFIX)/dbuscrontab
-	install -o root -g root -m 0755 -d $(PYMODULES)/dbuscron
-	python$(PYVERSION) -O -c 'import dbuscron'
+	install -o root -g root -m 0755 -d $(PYMODULES)/dbuscron/shell
+	python$(PYVERSION) -O -c 'import dbuscron, dbuscron.shell.main, dbuscron.shell.edit'
 	install -o root -g root -m 0644 ./dbuscron/*.$(PYSUFFIX) $(PYMODULES)/dbuscron
+	install -o root -g root -m 0644 ./dbuscron/shell/*.$(PYSUFFIX) $(PYMODULES)/dbuscron/shell
 	install -o root -g root -m 0644 ./event.d/dbuscron $(DESTDIR)/etc/event.d/dbuscron
 	-test ! -f $(DESTDIR)/etc/dbuscrontab && \
 		install -o root -g root -m 0644 ./doc/dbuscrontab $(DESTDIR)/etc/dbuscrontab
