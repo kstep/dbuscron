@@ -1,3 +1,20 @@
+dbuscron (1.2-1) unstable; urgency=low
+
+  * Next release:
+
+    Konstantin Stepanov (9):
+          dbuscron uses optparse instead of getopt
+          Makefile: ignore error on existing config
+          more robust and unicode safe dbus string handling
+          fixed unset session bus address issue
+          more robust loggin of unicode messages
+          better log messages
+          dbuscrontab: refactored error handling
+          moved shell part into modules
+          Makefile updated
+
+ -- Konstantin Stepanov <kstep@p-nut.info>  Sun, 12 Dec 2010 14:40:04 +0200
+
 dbuscron (1.1-1) unstable; urgency=low
 
   * Initial release
