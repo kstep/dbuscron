@@ -39,5 +39,12 @@ debclean:
 deb: debclean
 	debuild binary-indep
 
-.PHONY: all install uninstall clean debclean deb
+build: debclean
+	./genchangelog $(B)
+	git commit -m "changelog updated" ./debian/changelog
+	git tag -f v$(B)
+	git push -f origin v$(B)
+	$(MAKE) deb
+
+.PHONY: all install uninstall clean debclean deb build
 
