@@ -115,7 +115,8 @@ class CrontabParser(object):
 def OptionsParser(args=None, help=u'', **opts):
 
     from optparse import OptionParser
-    parser = OptionParser(usage=help)
+    import dbuscron
+    parser = OptionParser(usage=help, version="%prog "+dbuscron.__version__)
     for opt, desc in opts.iteritems():
         names = desc.pop('names')
         desc['dest'] = opt
