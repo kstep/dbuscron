@@ -20,50 +20,12 @@ def run():
     log = Logger(__name__, out=logout)
     log.level = options.verbose - options.quiet + Logger.WARNING
 
-    if os.getuid() == 0:
-        if options.userid:
-            try:
-                import pwd
-                try:
-                    userid = int(options.userid)
-                except ValueError:
-                    userid = pwd.getpwnam(options.userid)[2]
-
-            except:
-                log.warn('Unable to find user', options.userid)
-                userid = None
-
-        else:
-            userid = None
-
-        if options.groupid:
-            try:
-                try:
-                    groupid = int(options.groupid)
-                except ValueError:
-                    import grp
-                    groupid = grp.getgrnam(options.groupid)[2]
-
-            except:
-                log.warn('Unable to find group', options.groupid)
-                groupid = None
-
-        elif userid:
-            groupid = pwd.getpwuid(userid)[3]
-
-        else:
-            groupid = None
-
-        if groupid:
-            os.setgid(groupid)
-        if userid:
-            os.getuid(userid)
-
-    elif options.userid or options.groupid:
-        log.warn('Ignoring userid and groupid arguments: I am not a root to pretend somebody else.')
+    if options.userid or options.groupid:
+        from dbuscron.util import set_user_and_group
+        set_user_and_group(options.userid, options.groupid)
 
     if options.daemon:
-        from dbuscron.daemonize import daemonize
+        from dbuscron.util import daemonize
         daemonize(
             pidfile='/var/run/dbuscron.pid',
             logfile='/var/log/dbuscron.log'
