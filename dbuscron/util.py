@@ -4,6 +4,7 @@ def daemonize(logfile=None, errfile=None, pidfile=None):
     devnull = os.devnull if hasattr(os, 'devnull') else '/dev/null'
 
     initwd = os.getcwd()
+
     def absolutize(path):
         if path.startswith('/'):
             return path
@@ -20,7 +21,7 @@ def daemonize(logfile=None, errfile=None, pidfile=None):
         else:
             os._exit(0)
     except OSError, e:
-        raise Exception('Failed daemonization: %s' % str(e))
+        raise SystemError('Failed daemonization: %s' % str(e))
 
     for i in range(0, 3):
         os.close(i)
@@ -28,8 +29,7 @@ def daemonize(logfile=None, errfile=None, pidfile=None):
     os.open(devnull, os.O_RDWR)
 
     def open_trunc(fname):
-        f = os.open(fname, \
-            os.O_WRONLY|os.O_CREAT)
+        f = os.open(fname, os.O_WRONLY | os.O_CREAT)
         os.ftruncate(f, 0)
         return f
 
@@ -54,4 +54,36 @@ def daemonize(logfile=None, errfile=None, pidfile=None):
         sys.exitfunc = remove_pidfile
 
     return pid
+
+def set_user_and_group(user, group=None):
+    if os.getuid() != 0:
+        raise SystemError('I\'m not a root to pretend somebody else.')
+
+    if user:
+        import pwd
+        try:
+            userid = int(user)
+        except ValueError:
+            userid = pwd.getpwnam(user)[2]
+
+    else:
+        userid = None
+
+    if group:
+        try:
+            groupid = int(group)
+        except ValueError:
+            import grp
+            groupid = grp.getgrnam(group)[2]
+
+    elif userid:
+        groupid = pwd.getpwuid(userid)[3]
+
+    else:
+        groupid = None
+
+    if groupid:
+        os.setgid(groupid)
+    if userid:
+        os.setuid(userid)
 
