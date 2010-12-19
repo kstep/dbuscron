@@ -1,9 +1,8 @@
-import os, sys
 
 def run():
 
-    from dbuscron import Logger, OptionsParser
-
+    # 1. parse arguments
+    from dbuscron.parser import OptionsParser
     options = OptionsParser(
             daemon=dict(names=('-f', '--nodaemon'), action='store_false', default=True),
             quiet=dict(names=('--quiet', '-q'), action='count', default=0),
@@ -13,41 +12,60 @@ def run():
             userid=dict(names=('-u', '--user', '--uid', '--userid')),
             groupid=dict(names=('-g', '--group', '--gid', '--groupid')))
 
+    # 2. logging setup
+    import sys
     logout = sys.stderr
     if options.logfile:
         logout = open(options.logfile, 'wb')
 
+    from dbuscron.logger import Logger
     log = Logger(__name__, out=logout)
     log.level = options.verbose - options.quiet + Logger.WARNING
 
-    if options.userid or options.groupid:
-        from dbuscron.util import set_user_and_group
-        set_user_and_group(options.userid, options.groupid)
+    # 3. process properties setup
+    try:
+        if options.userid or options.groupid:
+            from dbuscron.util import set_user_and_group
+            set_user_and_group(options.userid, options.groupid)
 
-    if options.daemon:
-        from dbuscron.util import daemonize
-        daemonize(
-            pidfile='/var/run/dbuscron.pid',
-            logfile='/var/log/dbuscron.log'
-            )
+        if options.daemon:
+            from dbuscron.util import daemonize
+            daemonize(
+                pidfile='/var/run/dbuscron.pid',
+                logfile='/var/log/dbuscron.log')
 
-    from dbuscron import DbusBus, DbusRule, Command, Commands, CrontabParser
+    except SystemError, e:
+        log.error(e.message)
+        sys.exit(4)
+
+    # 4. main instances initialization
+    from dbuscron.bus import DbusBus, DbusRule
+    from dbuscron.command import Command, Commands
+    from dbuscron.parser import CrontabParser, CrontabParserError
 
     bus = DbusBus()
     commands = Commands()
-
     crontab = CrontabParser(options.config)
 
+    # 5. load config file
     def load_config(parser):
-        for rule, cmd in parser:
-            matcher = DbusRule(**rule)
-            command = Command(cmd)
-            matcher.register()
-            log('rule parsed', matcher, command)
-            commands.add(matcher, command)
+        try:
+            for rule, cmd in parser:
+                matcher = DbusRule(**rule)
+                command = Command(cmd)
+                matcher.register()
+                log('rule parsed', matcher, command)
+                commands.add(matcher, command)
+
+            commands.environ = parser.environ
+
+        except CrontabParserError, e:
+            log.error(e.message)
+            sys.exit(3)
 
     load_config(crontab)
 
+    # 6. setup signal handlers
     def reload_config_on_signal(sig_no, stack):
         log('Signal #%d received: reloading config...' % (sig_no))
         commands.clear()
@@ -57,9 +75,10 @@ def run():
     import signal
     signal.signal(signal.SIGHUP, reload_config_on_signal)
 
-    commands.environ = crontab.environ
+    # 7. setup DBUS handlers
     bus.attach_handler(commands.handler)
 
+    # 8. run main application listen loop
     try:
         bus.listen()
     except KeyboardInterrupt:
