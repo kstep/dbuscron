@@ -12,6 +12,7 @@ install:
 	install -o root -g root -m 0755 ./dbuscron.py $(PREFIX)/dbuscron
 	install -o root -g root -m 0755 ./dbuscrontab.py $(PREFIX)/dbuscrontab
 	install -o root -g root -m 0755 -d $(PYMODULES)/dbuscron/shell
+	sed -i -e "s/%VERSION%/`git describe --tags`/" ./dbuscron/__init__.py
 	python$(PYVERSION) -O -c 'import dbuscron, dbuscron.shell.main, dbuscron.shell.edit'
 	install -o root -g root -m 0644 ./dbuscron/*.$(PYSUFFIX) $(PYMODULES)/dbuscron
 	install -o root -g root -m 0644 ./dbuscron/shell/*.$(PYSUFFIX) $(PYMODULES)/dbuscron/shell

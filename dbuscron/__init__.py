@@ -1,4 +1,6 @@
 
+__version__ = "%VERSION%"
+
 from dbuscron.bus import DbusRule, DbusBus
 from dbuscron.command import Command, Commands
 from dbuscron.util import daemonize, set_user_and_group
