@@ -1,0 +1,16 @@
+#!/bin/sh
+BUILD=${1%.0}
+
+cat <<CHANGELOG > ./debian/changelog.new
+dbuscron (${BUILD}-1) unstable; urgency=low
+
+  * Next release:
+
+    `git shortlog $(git describe --tags --abbrev=0)..HEAD`
+
+ -- Konstantin Stepanov <kstep@p-nut.info>  `LC_ALL=C date +'%a, %e %b %Y %T %z'`
+
+CHANGELOG
+
+cat ./debian/changelog >> ./debian/changelog.new && mv -f ./debian/changelog.new ./debian/changelog
+
