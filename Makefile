@@ -30,5 +30,13 @@ uninstall:
 clean:
 	find ./dbuscron -name "*.py[co]" | xargs rm -f 
 
-.PHONY: all install uninstall clean
+debclean:
+	debclean
+	rm -rf ./debian/patches ./debian/dbuscron
+	rm -rf ./.pc
+
+deb: debclean
+	debuild binary-indep
+
+.PHONY: all install uninstall clean debclean deb
 
