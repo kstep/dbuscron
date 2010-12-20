@@ -107,7 +107,7 @@ class CrontabParser(object):
 
                     ruled = dict()
                     for i, f in enumerate(self.__fields):
-                        if self.__fields_chk[f]:
+                        if r[i] is not None and self.__fields_chk[f]:
                             if isinstance(self.__fields_chk[f], tuple):
                                 if r[i] not in self.__fields_chk[f]:
                                     raise CrontabParserError('Unexpected %s value' % (f.strip('_')), lineno,
