@@ -71,7 +71,7 @@ class CrontabParser(object):
 
                 parts = self.__fields_sep.split(line, 8)
                 if len(parts) < 9:
-                    parts = self.__envvar_sep(line, 1)
+                    parts = self.__envvar_sep.split(line, 1)
                     if len(parts) == 2:
                         self.__environ[parts[0]] = parts[1]
                         continue
