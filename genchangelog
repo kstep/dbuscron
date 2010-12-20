@@ -6,7 +6,7 @@ dbuscron (${BUILD}-1) unstable; urgency=low
 
   * Next release:
 
-    `git shortlog $(git describe --tags --abbrev=0)..HEAD`
+`git shortlog $(git describe --tags --abbrev=0)..HEAD | sed 's/^/    /'`
 
  -- Konstantin Stepanov <kstep@p-nut.info>  `LC_ALL=C date +'%a, %e %b %Y %T %z'`
 
