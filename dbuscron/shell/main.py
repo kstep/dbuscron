@@ -10,7 +10,8 @@ def run():
             config=dict(names=('--conf', '--config', '-c'), default='/etc/dbuscrontab'),
             logfile=dict(names=('--log', '--logfile', '-l')),
             userid=dict(names=('-u', '--user', '--uid', '--userid')),
-            groupid=dict(names=('-g', '--group', '--gid', '--groupid')))
+            groupid=dict(names=('-g', '--group', '--gid', '--groupid')),
+            sessionaddr=dict(names=('-s', '--session', '--sessionaddr')))
 
     # 2. logging setup
     import sys
@@ -43,7 +44,7 @@ def run():
     from dbuscron.command import Command, Commands
     from dbuscron.parser import CrontabParser, CrontabParserError
 
-    bus = DbusBus()
+    bus = DbusBus(options.sessionaddr)
     commands = Commands()
     crontab = CrontabParser(options.config)
 
