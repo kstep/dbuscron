@@ -1,3 +1,17 @@
+dbuscron (1.3-1) unstable; urgency=low
+
+  * Next release:
+
+    Konstantin Stepanov (6):
+      new cli args: userid and groupid to set user and group to change too
+      moved user & group id setting code into separate function
+      main module code cleanup: more comments & logging, better error handling etc.
+      Makefile: debclean & deb targets
+      auto version setting
+      Makefile: build target
+
+ -- Konstantin Stepanov <kstep@p-nut.info>  Mon, 20 Dec 2010 02:16:13 +0200
+
 dbuscron (1.2-1) unstable; urgency=low
 
   * Next release:
