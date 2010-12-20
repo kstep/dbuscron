@@ -3,6 +3,13 @@ from __future__ import with_statement
 import re
 from dbuscron.bus import DbusBus
 
+def unescape(value):
+    if not value or r'\x' not in value:
+        return value
+
+    r = re.compile(r'\\x([0-9A-Fa-f]{2})')
+    return r.sub(lambda m: chr(int(m.group(1), 16)), value)
+
 def product(*args):
     if args:
         head, tail = args[0], args[1:]
@@ -96,7 +103,7 @@ class CrontabParser(object):
                         raise CrontabParserError('Unexpected bus value', lineno, expected=('S', 's', '*'))
 
                     if r[7]:
-                        r[7] = r[7].split(';')
+                        r[7] = map(unescape, r[7].split(';'))
 
                     ruled = dict()
                     for i, f in enumerate(self.__fields):
