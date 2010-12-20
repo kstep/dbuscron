@@ -24,7 +24,6 @@ def dbus_to_str(value):
         log.error('convert exception', e)
         raise e
 
-
 def get_dbus_message_type(message):
     result = message.__class__.__name__[0:-7]
     for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
@@ -36,15 +35,22 @@ class DbusBus(object):
     __system_bus = None
     __session_bus = None
 
-    def __new__(cls):
+    def __new__(cls, *args, **kw):
         if not cls.__bus:
             cls.__bus = super(DbusBus, cls).__new__(cls)
         return cls.__bus
 
-    def __init__(self):
-        self.get_session_bus_address()
+    def __init__(self, session_bus_address=None):
+        if session_bus_address:
+            self.set_session_bus_address(session_bus_address)
+        else:
+            self.get_session_bus_address()
+
         from dbus.mainloop.glib import DBusGMainLoop
         DBusGMainLoop(set_as_default=True)
+
+    def set_session_bus_address(self, value):
+        os.environ['DBUS_SESSION_BUS_ADDRESS'] = str(value)
 
     def get_session_bus_address(self):
         try:
@@ -55,6 +61,8 @@ class DbusBus(object):
                 os.environ['DBUS_SESSION_BUS_ADDRESS'] = session_bus_address
                 log('session bus address aquired', session_bus_address)
                 return session_bus_address
+
+    session_bus_address = property(get_session_bus_address, set_session_bus_address)
 
     @property
     def system(self):
