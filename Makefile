@@ -2,23 +2,26 @@
 DESTDIR ?= 
 PYMODULES ?= $(DESTDIR)/usr/lib/pymodules/python2.5
 PREFIX ?= $(DESTDIR)/usr/bin
-PYSUFFIX = `test -e ./dbuscron/__init__.pyo && echo pyo || echo pyc`
 PYVERSION ?= 2.5
 
-all:
-	@echo "No compilation needed."
+.SUFFIXES: .py .pyo
 
-install:
+compile: .py.pyo
+
+.py.pyo:
+	sed -i.bak -e "s/%VERSION%/`git describe --tags`/" ./dbuscron/__init__.py
+	python$(PYVERSION) -O -m compileall ./dbuscron
+	mv -f ./dbuscron/__init__.py.bak ./dbuscron/__init__py
+
+install: compile
 	install -o root -g root -m 0755 ./dbuscron.py $(PREFIX)/dbuscron
 	install -o root -g root -m 0755 ./dbuscrontab.py $(PREFIX)/dbuscrontab
 	install -o root -g root -m 0755 -d $(PYMODULES)/dbuscron/shell
-	sed -i -e "s/%VERSION%/`git describe --tags`/" ./dbuscron/__init__.py
-	python$(PYVERSION) -O -c 'import dbuscron, dbuscron.shell.main, dbuscron.shell.edit'
-	install -o root -g root -m 0644 ./dbuscron/*.$(PYSUFFIX) $(PYMODULES)/dbuscron
-	install -o root -g root -m 0644 ./dbuscron/shell/*.$(PYSUFFIX) $(PYMODULES)/dbuscron/shell
+	find ./dbuscron -name "*.pyo" | xargs -I {} install -o root -g root -m 0644 {} $(PYMODULES)/{}
 	install -o root -g root -m 0644 ./event.d/dbuscron $(DESTDIR)/etc/event.d/dbuscron
-	-test ! -f $(DESTDIR)/etc/dbuscrontab && \
+	test -f $(DESTDIR)/etc/dbuscrontab || \
 		install -o root -g root -m 0644 ./doc/dbuscrontab $(DESTDIR)/etc/dbuscrontab
+	@echo ""
 	@echo "Installation complete. Run \`dbuscrontab -e' to edit config file,"
 	@echo "then run \`initctl start dbuscron' to start dbuscron daemon."
 
@@ -46,5 +49,5 @@ build: debclean
 	git push -f origin v$(B)
 	$(MAKE) deb
 
-.PHONY: all install uninstall clean debclean deb build
+.PHONY: install uninstall clean debclean deb build compile
 
