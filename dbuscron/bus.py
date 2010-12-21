@@ -153,7 +153,7 @@ class DbusRule(object):
             for i, arg in enumerate(args_):
                 if i >= len(self._args):
                     break
-                if self._args[i] not in (None, str(arg)):
+                if self._args[i] not in (None, dbus_to_str(arg)):
                     return False
 
         return True
