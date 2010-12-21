@@ -33,23 +33,38 @@ for fn in os.listdir(dbus_scripts_dir):
         continue
 
     fout = os.path.join(dbuscron_dir, fn)
+    print '%s -> %s' % (fnam, fout)
 
+    lineno = 0
     with open(fnam, 'rb') as f:
+        lineno += 1
         with open(fout, 'wb') as o:
             for line in f:
                 line = line.strip()
                 if not line or line.startswith('#'):
+                    print >> o, line
                     continue
 
-                cmd, src, dest, iface, meth, args = line.split(' ', 5)
-                args = args.replace(' ',';')
-                opts = dict(
-                        cmd=cmd,
-                        src=src,
-                        dest=dest,
-                        iface=iface,
-                        meth=meth,
-                        args=args)
+                parts = line.split(' ', 5)
+                opts = dict()
+                for i, n in enumerate(('cmd', 'src', 'dest', 'iface', 'meth', 'args')):
+                    try:
+                        opts[n] = parts[i]
+                    except IndexError:
+                        opts[n] = '*'
+
+                opts['args'] = opts['args'].replace(' ', ';')
+                skip_args = 0
+                while opts['args'].startswith('*;'):
+                    opts['args'] = opts['args'][2:]
+                    skip_args += 1
+                opts['args'] = ';'*skip_args + opts['args']
+
+                if opts['args'] != '*' \
+                    and '*' in opts['args']:
+                    print >> sys.stderr, 'Warning: %s:%d: arguments contain wildcard characters, unsupported by dbuscron.' % (fnam, lineno)
+
                 # bus type sender interface path member destination args command
-                print >> o, 'S signal,method_call %(src)s %(iface)s * %(meth)s %(dest)s %(args)s %(cmd)s' % opts
+                res = 'S signal,method_call %(src)s %(iface)s * %(meth)s %(dest)s %(args)s !%(cmd)s' % opts
+                print >> o, res
 
