@@ -54,6 +54,7 @@ def run():
 
     # 5. load config file
     def load_config(parser):
+        log("Loading config from", parser.filename, "...")
         try:
             for rule, cmd in parser:
                 matcher = DbusRule(**rule)
