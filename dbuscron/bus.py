@@ -1,6 +1,7 @@
 from __future__ import with_statement
 
 import dbus, os
+from fnmatch import fnmatch
 
 from dbuscron.logger import Logger
 log = Logger(__name__)
@@ -124,7 +125,6 @@ class DbusRule(object):
         return ','.join(rule)
 
     def match(self, bus, message):
-
         if self._bus not in (None, bus):
             return False
 
@@ -153,8 +153,10 @@ class DbusRule(object):
             for i, arg in enumerate(args_):
                 if i >= len(self._args):
                     break
-                if self._args[i] not in (None, dbus_to_str(arg)):
-                    return False
+                a = dbus_to_str(arg)
+                if self._args[i] not in (None, a):
+                    if not fnmatch(a, self._args[i]):
+                        return False
 
         return True
 
