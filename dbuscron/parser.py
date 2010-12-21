@@ -95,6 +95,10 @@ class FileParser(object):
     def environ(self):
         return self.__environ
 
+    @property
+    def filename(self):
+        return self.__filename
+
     def _iterate_file(self, filename):
         # bus type sender interface path member destination args command
         lineno = 0
@@ -155,17 +159,16 @@ class FileParser(object):
 class DirectoryParser(CrontabParser):
 
     def __init__(self, dirname, recursive=False):
-        self.__dirname = dirname
         self.__recursive = recursive
-        super(DirectoryParser, self).__init__(None)
+        super(DirectoryParser, self).__init__(dirname)
 
     def _dirwalker_plain(self):
-        for i in os.listdir(self.__dirname):
+        for i in os.listdir(self.__filename):
             if os.path.isfile(i):
                 yield i
 
     def _dirwalker_recursive(self):
-        for r, d, f in os.walk(self.__dirname):
+        for r, d, f in os.walk(self.__filename):
             for i in f:
                 yield i
 
@@ -177,7 +180,7 @@ class DirectoryParser(CrontabParser):
             dirwalker = self._dirwalker_plain
 
         for fname in dirwalker():
-            fullname = os.path.join(self.__dirname, fname)
+            fullname = os.path.join(self.__filename, fname)
             self.__filename = fullname
             for item in self._iterate_file(fullname):
                 yield item
