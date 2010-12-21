@@ -3,12 +3,22 @@ from __future__ import with_statement
 import re
 from dbuscron.bus import DbusBus
 
-def unescape(value):
-    if not value or r'\x' not in value:
-        return value
+def unescape_():
+    h = '[0-9A-Fa-f]'
+    r = re.compile(r'\\x('+h+r'{2})|\\u('+h+'{4})')
+    def unescape(value):
+        if not (value and \
+            (r'\x' in value or r'\u' in value)):
+            return value
 
-    r = re.compile(r'\\x([0-9A-Fa-f]{2})')
-    return r.sub(lambda m: chr(int(m.group(1), 16)), value)
+        return r.sub(\
+            lambda m: chr(int(m.group(1), 16)) \
+                if m.group(1) is not None else \
+                    unichr(int(m.group(2), 16))\
+                        .encode('utf-8'),\
+            value)
+    return unescape
+unescape = unescape_()
 
 def product(*args):
     if args:
