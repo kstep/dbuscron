@@ -44,17 +44,23 @@ class CrontabParserError(SyntaxError):
 
         SyntaxError.__init__(self, msg)
 
-def CrontabParser(filename):
-    if os.path.isfile(filename):
-        parser_class = FileParser
+def CrontabParser(*filenames):
+    for filename in filenames:
+        if not os.path.exists(filename):
+            continue
 
-    elif os.path.isdir(filename):
-        parser_class = DirectoryParser
+        if os.path.isfile(filename):
+            parser_class = FileParser
 
-    else:
-        raise SystemError("I can parse only directories or simple files.")
+        elif os.path.isdir(filename):
+            parser_class = DirectoryParser
 
-    return parser_class(filename)
+        else:
+            raise SystemError("I can parse only directories or simple files.")
+
+        return parser_class(filename)
+
+    raise SystemError("Can't find any config file or directory.")
 
 class FileParser(object):
     __fields_sep = re.compile(r'\s+')

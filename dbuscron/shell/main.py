@@ -46,7 +46,11 @@ def run():
 
     bus = DbusBus(options.sessionaddr)
     commands = Commands()
-    crontab = CrontabParser(options.config)
+
+    config_files = [ options.config ]
+    if not options.config.endswith('.d'):
+        config_files.insert(0, options.config+'.d')
+    crontab = CrontabParser(*config_files)
 
     # 5. load config file
     def load_config(parser):
