@@ -14,14 +14,20 @@ class Command(object):
         else:
             self.__args = cmd.split(' ')
             self.__file = self.__args[0]
+            if len(self.__args) == 1 \
+                and self.__file.startswith('!'):
+                self.__file = self.__file.lstrip('!')
+                self.__auto_args = True
+            else:
+                self.__auto_args = False
 
     def __call__(self, bus, message, environ):
-        args_list = message.get_args_list()
+        args_list = map(dbus_to_str, message.get_args_list())
         env = dict()
         env.update(environ)
         try:
             dbus_env = dict(
-                    (('DBUS_ARG%d' % i, dbus_to_str(a)) for i, a in enumerate(args_list)),
+                    (('DBUS_ARG%d' % i, a) for i, a in enumerate(args_list)),
                     DBUS_ARGN   = str(len(args_list)),
                     DBUS_SENDER = str(message.get_sender()),
                     DBUS_DEST   = str(message.get_destination()),
@@ -36,9 +42,14 @@ class Command(object):
             log.error('environ exception', e)
             raise e
 
-        result = os.spawnvpe(os.P_WAIT, self.__file, self.__args, env)
+        if self.__auto_args:
+            args_list.insert(0, self.__file)
+        else:
+            args_list = self.__args
+
+        result = os.spawnvpe(os.P_WAIT, self.__file, args_list, env)
         if result != 0:
-            log.warn('command returned non-zero status', self.__file, self.__args, dbus_env, result)
+            log.warn('command returned non-zero status', self.__file, args_list, dbus_env, result)
         return result
 
     @property
