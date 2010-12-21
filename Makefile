@@ -4,6 +4,8 @@ PYMODULES ?= $(DESTDIR)/usr/lib/pymodules/python2.5
 PREFIX ?= $(DESTDIR)/usr/bin
 PYVERSION ?= 2.5
 
+BINFILES = dbuscron.py dbuscrontab.py migrate-dbus-scripts.py
+
 .SUFFIXES: .py .pyo
 
 compile: .py.pyo
@@ -14,8 +16,8 @@ compile: .py.pyo
 	mv -f ./dbuscron/__init__.py.bak ./dbuscron/__init__.py
 
 install: compile
-	install -o root -g root -m 0755 ./dbuscron.py $(PREFIX)/dbuscron
-	install -o root -g root -m 0755 ./dbuscrontab.py $(PREFIX)/dbuscrontab
+	for f in $(BINFILES); do \
+		install -o root -g root -m 0755 ./$$f $(PREFIX)/`basename $$f .py`
 	install -o root -g root -m 0755 -d $(PYMODULES)/dbuscron/shell
 	find ./dbuscron -name "*.pyo" | xargs -I {} install -o root -g root -m 0644 {} $(PYMODULES)/{}
 	install -o root -g root -m 0644 ./event.d/dbuscron $(DESTDIR)/etc/event.d/dbuscron
