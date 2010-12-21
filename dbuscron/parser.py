@@ -87,17 +87,17 @@ class FileParser(object):
             ]
 
     def __init__(self, fname):
-        self.__bus = DbusBus()
-        self.__filename = fname
-        self.__environ = dict()
+        self._bus = DbusBus()
+        self._filename = fname
+        self._environ = dict()
 
     @property
     def environ(self):
-        return self.__environ
+        return self._environ
 
     @property
     def filename(self):
-        return self.__filename
+        return self._filename
 
     def _iterate_file(self, filename):
         # bus type sender interface path member destination args command
@@ -130,9 +130,9 @@ class FileParser(object):
                 for r in product(*rule):
                     r = list(r)
                     if r[0] == 'S':
-                        r[0] = self.__bus.system
+                        r[0] = self._bus.system
                     elif r[0] == 's':
-                        r[0] = self.__bus.session
+                        r[0] = self._bus.session
                     else:
                         raise CrontabParserError('Unexpected bus value', lineno, expected=('S', 's', '*'))
 
@@ -154,35 +154,33 @@ class FileParser(object):
                     yield ruled, command
 
     def __iter__(self):
-        return self._iterate_file(self.__filename)
+        return self._iterate_file(self._filename)
 
-class DirectoryParser(CrontabParser):
+class DirectoryParser(FileParser):
 
     def __init__(self, dirname, recursive=False):
         self.__recursive = recursive
         super(DirectoryParser, self).__init__(dirname)
 
     def _dirwalker_plain(self):
-        for i in os.listdir(self.__filename):
-            if os.path.isfile(i):
-                yield i
+        for i in os.listdir(self._filename):
+            f = os.path.join(self._filename, i)
+            if os.path.isfile(f):
+                yield f
 
     def _dirwalker_recursive(self):
-        for r, d, f in os.walk(self.__filename):
+        for r, d, f in os.walk(self._filename):
             for i in f:
-                yield i
+                yield os.path.join(r, i)
 
     def __iter__(self):
-
         if self.__recursive:
             dirwalker = self._dirwalker_recursive
         else:
             dirwalker = self._dirwalker_plain
 
         for fname in dirwalker():
-            fullname = os.path.join(self.__filename, fname)
-            self.__filename = fullname
-            for item in self._iterate_file(fullname):
+            for item in self._iterate_file(fname):
                 yield item
 
 def OptionsParser(args=None, help=u'', **opts):
