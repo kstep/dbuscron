@@ -11,7 +11,7 @@ compile: .py.pyo
 .py.pyo:
 	sed -i.bak -e "s/%VERSION%/`git describe --tags`/" ./dbuscron/__init__.py
 	python$(PYVERSION) -O -m compileall ./dbuscron
-	mv -f ./dbuscron/__init__.py.bak ./dbuscron/__init__py
+	mv -f ./dbuscron/__init__.py.bak ./dbuscron/__init__.py
 
 install: compile
 	install -o root -g root -m 0755 ./dbuscron.py $(PREFIX)/dbuscron
