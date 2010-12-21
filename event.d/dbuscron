@@ -5,5 +5,5 @@ start on started hildon-desktop
 stop on stopping dbus
 console output
 respawn
-exec /usr/bin/dbuscron -f
+exec /usr/bin/dbuscron -f -u user
 
