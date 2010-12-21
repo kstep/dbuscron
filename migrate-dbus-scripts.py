@@ -60,10 +60,6 @@ for fn in os.listdir(dbus_scripts_dir):
                     skip_args += 1
                 opts['args'] = ';'*skip_args + opts['args']
 
-                if opts['args'] != '*' \
-                    and '*' in opts['args']:
-                    print >> sys.stderr, 'Warning: %s:%d: arguments contain wildcard characters, unsupported by dbuscron.' % (fnam, lineno)
-
                 # bus type sender interface path member destination args command
                 res = 'S signal,method_call %(src)s %(iface)s * %(meth)s %(dest)s %(args)s !%(cmd)s' % opts
                 print >> o, res
