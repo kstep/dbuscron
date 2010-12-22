@@ -1,3 +1,16 @@
+dbuscron (1.5.1-1) unstable; urgency=low
+
+  * Next release:
+
+    Konstantin Stepanov (4):
+          changelog format fix
+          Makefile: tarball target to build source tarball
+          fixed undefined property auto args related error
+          changelog updated
+
+
+ -- Konstantin Stepanov <kstep@p-nut.info>  Wed, 22 Dec 2010 23:57:08 +0200
+
 dbuscron (1.5-1) unstable; urgency=low
 
   * Next release:
