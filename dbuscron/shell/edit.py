@@ -58,6 +58,10 @@ def run():
     try:
         if action == '-e':
 
+            # 0. get custom config file to edit
+            if len(sys.argv) > 2:
+                conffile = sys.argv[2]
+
             # 1. create temporary config file copy
             temp_file = create_temp_file(conffile)
             mod_time = os.path.getmtime(temp_file)
@@ -102,12 +106,13 @@ def run():
         else:
             print """
 Usage:
-    %(myname)s { -e | -l }
+    %(myname)s { -e | -l | -k } [config-file]
 
-    -e      edit %(conffile)s file
-    -l      list contents of %(conffile)s file
-    -k      check %(conffile)s's syntax
+    -e      edit config file
+    -l      list contents of config file
+    -k      check config file's syntax
 
+    Default for config-file is %(conffile)s
 """ % dict(myname=os.path.basename(sys.argv[0]), conffile=conffile)
 
     except SystemError, e:
