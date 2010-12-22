@@ -1,3 +1,32 @@
+dbuscron (1.5-1) unstable; urgency=low
+
+  * Next release:
+
+    Konstantin Stepanov (20):
+          convert message arguments in a more smart way on match
+          fixed typo in Makefile
+          DirectoryParser() to parse config directories
+          parse config dirs and files transparently
+          handle /etc/dbuscrontab.d as well as /etc/dbuscrontab
+          access filename in CrontabParser
+          log info about config source
+          migrate-dbus-scripts.py
+          Makefile: install main executable scripts in a uniform way
+          auto command args from message args
+          migrate-dbus-scripts.py: better handling of special cases
+          support fnmatch() args match
+          parser fixes
+          auto_args feature compatile with dbus-scripts args filling
+          dbuscrontab: get daemon's pid from pidfile if upstart failed
+          dbuscrontab: ability to pass config file to edit for -e action
+          dbuscrontab: config file argument is accepted by all actions
+          pass error messages into environment, None's are empty strings
+          documentation updated
+          Makefile: fixed shell syntax error
+    
+
+ -- Konstantin Stepanov <kstep@p-nut.info>  Wed, 22 Dec 2010 18:12:20 +0200
+
 dbuscron (1.4-1) unstable; urgency=low
 
   * Next release:
