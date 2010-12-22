@@ -18,14 +18,26 @@ def run_system_editor(filename):
     if os.system(editor + ' ' + pipes.quote(filename)) != 0:
         raise SystemError('Editor returned non-zero status value.')
 
+def get_dbuscron_pid_from_upstart():
+    f = os.popen('initctl status dbuscron', 'r')
+    status = f.readline()
+    f.close()
+    return int(status.strip().split(' ').pop())
+
+def get_dbuscron_pid_from_pidfile():
+    f = open(pidfile, 'r')
+    pid = f.readline()
+    f.close()
+    return int(pid)
+
 def get_dbuscron_pid():
     try:
-        f = os.popen('initctl status dbuscron', 'r')
-        status = f.readline()
-        f.close()
-        return int(status.strip().split(' ').pop())
+        return get_dbuscron_pid_from_upstart()
     except:
-        raise SystemError('Unable to get PID of dbuscron job.')
+        try:
+            return get_dbuscron_pid_from_pidfile()
+        except:
+            raise SystemError('Unable to get PID of dbuscron job.')
 
 def check_syntax(filename):
     parser = CrontabParser(filename)
