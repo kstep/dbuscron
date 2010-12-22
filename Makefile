@@ -17,7 +17,7 @@ compile: .py.pyo
 
 install: compile
 	for f in $(BINFILES); do \
-		install -o root -g root -m 0755 ./$$f $(PREFIX)/`basename $$f .py`
+		install -o root -g root -m 0755 ./$$f $(PREFIX)/`basename $$f .py`; done
 	install -o root -g root -m 0755 -d $(PYMODULES)/dbuscron/shell
 	find ./dbuscron -name "*.pyo" | xargs -I {} install -o root -g root -m 0644 {} $(PYMODULES)/{}
 	install -o root -g root -m 0644 ./event.d/dbuscron $(DESTDIR)/etc/event.d/dbuscron
