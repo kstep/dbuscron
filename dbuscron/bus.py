@@ -8,7 +8,9 @@ log = Logger(__name__)
 
 def dbus_to_str(value):
     try:
-        if isinstance(value, dbus.Byte):
+        if value is None:
+            return ''
+        elif isinstance(value, dbus.Byte):
             result = str(int(value))
         elif isinstance(value, dbus.ByteArray):
             result = ','.join(str(ord(v)) for v in value)

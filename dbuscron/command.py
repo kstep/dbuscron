@@ -29,14 +29,13 @@ class Command(object):
             dbus_env = dict(
                     (('DBUS_ARG%d' % i, a) for i, a in enumerate(args_list)),
                     DBUS_ARGN   = str(len(args_list)),
-                    DBUS_SENDER = str(message.get_sender()),
-                    DBUS_DEST   = str(message.get_destination()),
-                    DBUS_IFACE  = str(message.get_interface()),
-                    DBUS_PATH   = str(message.get_path()),
-                    DBUS_MEMBER = str(message.get_member()),
+                    DBUS_SENDER = str(message.get_sender() or ''),
+                    DBUS_DEST   = str(message.get_destination() or ''),
+                    DBUS_IFACE  = str(message.get_interface() or ''),
+                    DBUS_PATH   = str(message.get_path() or ''),
+                    DBUS_MEMBER = str(message.get_member() or ''),
                     DBUS_BUS    = bus.__class__.__name__.lower()[0:-3],
-                    # TODO
-                    #DBUS_ERROR = str(message.get_error_name()),
+                    DBUS_ERROR  = str(message.get_error_name() or ''),
                     DBUS_TYPE   = get_dbus_message_type(message)
                     )
             env.update(dbus_env)
@@ -49,9 +48,8 @@ class Command(object):
                 args_list[0:0] = [
                     dbus_env['DBUS_IFACE'],
                     dbus_env['DBUS_MEMBER']]
-            # TODO
-            #elif dbus_env['DBUS_TYPE'] == 'error':
-            #    args_list.insert(0, dbus_env['DBUS_ERROR'])
+            elif dbus_env['DBUS_TYPE'] == 'error':
+               args_list.insert(0, dbus_env['DBUS_ERROR'])
 
             args_list[0:0] = [
                     self.__file,
