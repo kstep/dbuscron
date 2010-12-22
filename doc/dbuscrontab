@@ -1,4 +1,7 @@
 # This is a system-wide dbuscron config file.
+# If there is /etc/dbuscrontab.d directory, this file will be ignored, and all
+# files in this directory will be parsed one by one as one big config instead.
+#
 # Lines starting with `#' are ignored.
 # Format of this file (table with whitespace-separated records):
 #
@@ -10,18 +13,31 @@
 # `S' for system bus or `s' for session bus, type field can have one of signal,
 # method_return, method_call or error values. Arguments consist of
 # semicolon-separated values to match arguments of DBUS events.
+# Arguments are matched with fnmatch(3), so they can contain usual wildcards
+# like `*', `?' etc.
+#
+# If command field is single file name without spaces (i.e. arguments) and this
+# file name is prepended with exclamation sign (!), then this program is run in
+# "auto args" mode compatible with dbus-scripts method of command running, i.e.
+# DBUS source, destination, interface, member and message arguments will be
+# placed into command's arguments list in this order. For error messages
+# there's error name instead of interface and member arguments, and for
+# method_return messages interface and member arguments are totally omitted.
+# This is made this way to be compatible with dbus-scripts.
 #
 # Examples:
 #
 # Run command for every DBUS event:
 # * * * * * * * * command
+# Run /path/to/logit.sh in auto args mode (dbus-scripts compatible):
+# * * * * * * * * !/path/to/logit.sh
 #
 # Run command on system bus event named Event with type either method_call or
 # method_return:
 # S method_call,method_return * * * * Event * command
 #
-# The same as above, by check if second argument equals either `foo' or `bar',
-# or first arguments is baz:
+# The same as above, but check if second argument equals either `foo' or `bar',
+# or first argument is `baz':
 # S method_call,method_return * * * * Event ;foo,;bar,baz command
 #
 # More practical examples:
@@ -37,14 +53,15 @@
 #
 # When command is running there're a number of environmental variables set so
 # the script can check DBUS event data. The variables are:
-#   DBUS_ARG# (where # is the number from 0 to DBUS_ARGN) - arguments of event,
-#   DBUS_ARGN - number of event arguments,
-#   DBUS_SENDER - event sender name,
-#   DBUS_DEST - event destination name,
-#   DBUS_IFACE - event interface,
-#   DBUS_PATH - event object path,
-#   DBUS_MEMBER - called event member,
-#   DBUS_BUS - bus event came from (`session' or `system'),
-#   DBUS_TYPE - event type as described above.
+#   DBUS_ARG# (where # is the number from 0 to DBUS_ARGN) - arguments of message,
+#   DBUS_ARGN - number of message arguments,
+#   DBUS_SENDER - message sender name,
+#   DBUS_DEST - message destination name,
+#   DBUS_IFACE - message interface,
+#   DBUS_PATH - message object path,
+#   DBUS_MEMBER - message member (a.k.a. method),
+#   DBUS_BUS - bus message came from (`session' or `system'),
+#   DBUS_TYPE - event type as described above,
+#   DBUS_ERROR - error name if message is error message, empty string otherwise.
 #
 
