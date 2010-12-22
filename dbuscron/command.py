@@ -35,6 +35,8 @@ class Command(object):
                     DBUS_PATH   = str(message.get_path()),
                     DBUS_MEMBER = str(message.get_member()),
                     DBUS_BUS    = bus.__class__.__name__.lower()[0:-3],
+                    # TODO
+                    #DBUS_ERROR = str(message.get_error_name()),
                     DBUS_TYPE   = get_dbus_message_type(message)
                     )
             env.update(dbus_env)
@@ -43,7 +45,18 @@ class Command(object):
             raise e
 
         if self.__auto_args:
-            args_list.insert(0, self.__file)
+            if dbus_env['DBUS_TYPE'] in ('signal', 'method_call'):
+                args_list[0:0] = [
+                    dbus_env['DBUS_IFACE'],
+                    dbus_env['DBUS_MEMBER']]
+            # TODO
+            #elif dbus_env['DBUS_TYPE'] == 'error':
+            #    args_list.insert(0, dbus_env['DBUS_ERROR'])
+
+            args_list[0:0] = [
+                    self.__file,
+                    dbus_env['DBUS_SENDER'],
+                    dbus_env['DBUS_DEST']]
         else:
             args_list = self.__args
 
