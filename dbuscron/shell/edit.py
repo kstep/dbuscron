@@ -1,6 +1,5 @@
 
 import os, sys, shutil, signal, tempfile, pipes
-conffile = '/etc/dbuscrontab'
 pidfile = '/var/run/dbuscron.pid'
 
 from dbuscron.parser import CrontabParser, CrontabParserError
@@ -56,11 +55,12 @@ def run():
         action = None
 
     try:
-        if action == '-e':
+        conffile = sys.argv[2]
+    except IndexError:
+        conffile = '/etc/dbuscrontab'
 
-            # 0. get custom config file to edit
-            if len(sys.argv) > 2:
-                conffile = sys.argv[2]
+    try:
+        if action == '-e':
 
             # 1. create temporary config file copy
             temp_file = create_temp_file(conffile)
