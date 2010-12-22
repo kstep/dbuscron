@@ -51,5 +51,8 @@ build: debclean
 	git push -f origin v$(B)
 	$(MAKE) deb
 
+tarball:
+	git archive --format=tar v$(B) | gzip -9 > ../dbuscron_$(B:.0=).orig.tar.gz
+
 .PHONY: install uninstall clean debclean deb build compile
 
