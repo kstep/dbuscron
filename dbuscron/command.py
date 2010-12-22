@@ -8,6 +8,7 @@ log = Logger(__name__)
 class Command(object):
     def __init__(self, cmd):
         self.__value = cmd
+        self.__auto_args = False
         if self.is_shell_cmd:
             self.__file = os.environ.get('SHELL', '/bin/sh')
             self.__args = [self.__file, '-c', self.__value]
@@ -18,8 +19,6 @@ class Command(object):
                 and self.__file.startswith('!'):
                 self.__file = self.__file.lstrip('!')
                 self.__auto_args = True
-            else:
-                self.__auto_args = False
 
     def __call__(self, bus, message, environ):
         args_list = map(dbus_to_str, message.get_args_list())
