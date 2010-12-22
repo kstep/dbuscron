@@ -11,7 +11,8 @@ BINFILES = dbuscron.py dbuscrontab.py migrate-dbus-scripts.py
 compile: .py.pyo
 
 .py.pyo:
-	sed -i.bak -e "s/%VERSION%/`git describe --tags`/" ./dbuscron/__init__.py
+	cp ./dbuscron/__init__.py ./dbuscron/__init__.py.bak
+	sed -i -e "s/%VERSION%/`git describe --tags`/" ./dbuscron/__init__.py
 	python$(PYVERSION) -O -m compileall ./dbuscron
 	mv -f ./dbuscron/__init__.py.bak ./dbuscron/__init__.py
 
@@ -19,7 +20,8 @@ install: compile
 	for f in $(BINFILES); do \
 		install -o root -g root -m 0755 ./$$f $(PREFIX)/`basename $$f .py`; done
 	install -o root -g root -m 0755 -d $(PYMODULES)/dbuscron/shell
-	find ./dbuscron -name "*.pyo" | xargs -I {} install -o root -g root -m 0644 {} $(PYMODULES)/{}
+	for f in `find ./dbuscron -name "*.pyo"`; do \
+		install -o root -g root -m 0644 $$f $(PYMODULES)/$$f; done
 	install -o root -g root -m 0644 ./event.d/dbuscron $(DESTDIR)/etc/event.d/dbuscron
 	test -f $(DESTDIR)/etc/dbuscrontab || \
 		install -o root -g root -m 0644 ./doc/dbuscrontab $(DESTDIR)/etc/dbuscrontab
