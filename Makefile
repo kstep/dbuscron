@@ -11,10 +11,7 @@ BINFILES = dbuscron.py dbuscrontab.py migrate-dbus-scripts.py
 compile: .py.pyo
 
 .py.pyo:
-	cp ./dbuscron/__init__.py ./dbuscron/__init__.py.bak
-	sed -i -e "s/%VERSION%/`git describe --tags`/" ./dbuscron/__init__.py
 	python$(PYVERSION) -O -m compileall ./dbuscron
-	mv -f ./dbuscron/__init__.py.bak ./dbuscron/__init__.py
 
 install: compile
 	for f in $(BINFILES); do \
