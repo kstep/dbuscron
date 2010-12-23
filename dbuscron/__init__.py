@@ -1,5 +1,5 @@
 
-__version__ = "%VERSION%"
+__version__ = "dev"
 
 from dbuscron.bus import DbusRule, DbusBus
 from dbuscron.command import Command, Commands
