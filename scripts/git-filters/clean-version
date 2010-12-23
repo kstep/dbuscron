@@ -1,0 +1,5 @@
+#!/usr/bin/perl
+while (<>) {
+    s/^__version__ = ".+?"$/__version__ = "dev"/;
+    print;
+}

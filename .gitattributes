@@ -1,0 +1,3 @@
+dbuscron/__init__.py filter=version
+scripts* export-ignore
+.git* export-ignore
