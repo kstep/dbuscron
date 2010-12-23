@@ -1,0 +1,6 @@
+#!/usr/bin/perl
+chomp($git_version = `git describe --tags`);
+while (<>) {
+    s/^__version__ = "dev"$/__version__ = "$git_version"/;
+    print;
+}
