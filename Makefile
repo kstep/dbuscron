@@ -52,5 +52,13 @@ build: debclean
 tarball:
 	git archive --format=tar v$(B) | gzip -9 > ../dbuscron_$(B:.0=).orig.tar.gz
 
-.PHONY: install uninstall clean debclean deb build compile
+debuild: tarball
+	debuild
+
+publish: debuild
+	scp ../dbuscron_$(B:.0=)*.tar.gz drop.maemo.org:/var/www/extras-devel/incoming-builder/fremantle
+	scp ../dbuscron_$(B:.0=)*.changes drop.maemo.org:/var/www/extras-devel/incoming-builder/fremantle
+	scp ../dbuscron_$(B:.0=)*.dsc drop.maemo.org:/var/www/extras-devel/incoming-builder/fremantle
+
+.PHONY: install uninstall clean debclean deb build compile tarball debuild publish
 
