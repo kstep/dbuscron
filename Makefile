@@ -47,7 +47,6 @@ build: debclean
 	./genchangelog $(B)
 	git commit -m "changelog updated" ./debian/changelog
 	git tag -f v$(B)
-	git push -f origin v$(B)
 	$(MAKE) deb
 
 tarball:
