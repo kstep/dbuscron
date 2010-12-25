@@ -53,7 +53,7 @@ tarball:
 	git archive --format=tar v$(B) | gzip -9 > ../dbuscron_$(B:.0=).orig.tar.gz
 
 debuild: tarball
-	debuild -aarmel
+	debuild
 
 publish: debuild
 	scp ../dbuscron_$(B:.0=)*.tar.gz drop.maemo.org:/var/www/extras-devel/incoming-builder/fremantle
