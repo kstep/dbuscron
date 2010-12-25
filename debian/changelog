@@ -1,3 +1,19 @@
+dbuscron (1.5.2-2) unstable; urgency=low
+
+  * Next release:
+
+    Konstantin Stepanov (7):
+          Makefile: use more busybox compatible commands
+          version from git filters
+          git attributes and helper scripts
+          added python to build depends
+          Makefile: do not push version tag to origin on build
+          Makefile: debuild and publish targets
+          Makefile: set architecture to build to armel
+
+
+ -- Konstantin Stepanov <kstep@p-nut.info>  Sat, 25 Dec 2010 20:27:44 +0200
+
 dbuscron (1.5.1-1) unstable; urgency=low
 
   * Next release:
@@ -36,7 +52,7 @@ dbuscron (1.5-1) unstable; urgency=low
           pass error messages into environment, None's are empty strings
           documentation updated
           Makefile: fixed shell syntax error
-    
+
 
  -- Konstantin Stepanov <kstep@p-nut.info>  Wed, 22 Dec 2010 18:12:20 +0200
 
@@ -54,7 +70,7 @@ dbuscron (1.4-1) unstable; urgency=low
           run dbuscron as user
           support \uXXXX as well as \xXX in args field
           Makefile: better compilation
-    
+
 
  -- Konstantin Stepanov <kstep@p-nut.info>  Tue, 21 Dec 2010 14:27:12 +0200
 
